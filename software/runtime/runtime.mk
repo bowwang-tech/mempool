@@ -14,7 +14,7 @@ include $(MEMPOOL_DIR)/config/config.mk
 # Python version
 python             ?= python3
 
-INSTALL_DIR        ?= $(MEMPOOL_DIR)/install
+INSTALL_DIR        ?= $(MEMPOOL_DIR)/../../sram_terapool/mempool/install
 GCC_INSTALL_DIR    ?= $(INSTALL_DIR)/riscv-gcc
 LLVM_INSTALL_DIR   ?= $(INSTALL_DIR)/llvm
 HALIDE_INSTALL_DIR ?= $(INSTALL_DIR)/halide
@@ -79,6 +79,8 @@ DEFINES += -DSEQ_MEM_SIZE=$(seq_mem_size)
 DEFINES += -DLOG2_SEQ_MEM_SIZE=$(shell awk 'BEGIN{print log($(seq_mem_size))/log(2)}')
 DEFINES += -DSTACK_SIZE=$(stack_size)
 DEFINES += -DLOG2_STACK_SIZE=$(shell awk 'BEGIN{print log($(stack_size))/log(2)}')
+DEFINES += -DHEAP_SEQ_MEM_SIZE=$(heap_seq_mem_size)
+DEFINES += -DLOG2_HEAP_SEQ_MEM_SIZE=$(shell awk 'BEGIN{print log($(heap_seq_mem_size))/log(2)}')
 DEFINES += -DXQUEUE_SIZE=$(xqueue_size)
 ifdef terapool
 	DEFINES += -DNUM_SUB_GROUPS_PER_GROUP=$(num_sub_groups_per_group)

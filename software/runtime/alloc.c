@@ -35,6 +35,17 @@ alloc_t alloc_l1;
 alloc_t alloc_tile[NUM_CORES / NUM_CORES_PER_TILE];
 
 // ----------------------------------------------------------------------------
+// Dynamic Heap Allocator 
+// ----------------------------------------------------------------------------
+alloc_t* dynamic_heap_alloc = NULL;
+void init_dynamic_heap_alloc(uint32_t num_partition){ // how many parts to devide the whole system
+  dynamic_heap_alloc = (alloc_t *)simple_malloc(num_partition * sizeof(alloc_t));
+}
+void free_dynamic_heap_alloc(void){
+  simple_free(dynamic_heap_alloc);
+}
+
+// ----------------------------------------------------------------------------
 // Canary System based on LSBs of block pointer
 // ----------------------------------------------------------------------------
 typedef struct {
@@ -239,3 +250,6 @@ void alloc_dump(alloc_t *alloc) {
 alloc_t *get_alloc_l1() { return &alloc_l1; }
 
 alloc_t *get_alloc_tile(const uint32_t tile_id) { return &alloc_tile[tile_id]; }
+
+// Dynamic Heap Allocator 
+alloc_t *get_dynamic_heap_alloc(const uint32_t part_id) {return &dynamic_heap_alloc[part_id];}

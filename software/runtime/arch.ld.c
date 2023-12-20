@@ -11,7 +11,7 @@ MEMORY {
 }
 
 SECTIONS {
-  // Start end end of memories
+  // Start and end of memories
   __l1_start = ORIGIN(l1);
   __l1_end = ORIGIN(l1) + LENGTH(l1);
   __l2_start = ORIGIN(l2);
@@ -29,6 +29,7 @@ SECTIONS {
 
   // Heap size (start address is re-assigned in link.ld)
   __heap_start = __l1_start;
+  __heap_seq_start = __l1_start + (NUM_CORES * 2 * L1_BANK_SIZE);
   __heap_end = __l1_end;
 
   // Hardware register location

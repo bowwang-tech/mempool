@@ -72,8 +72,11 @@ static inline uint32_t mempool_get_core_count_per_group() {
 static inline void mempool_init(const uint32_t core_id) {
   if (core_id == 0) {
     // Initialize L1 Interleaved Heap Allocator
-    extern uint32_t __heap_start, __heap_end;
-    uint32_t heap_size = (uint32_t)&__heap_end - (uint32_t)&__heap_start;
+    // extern uint32_t __heap_start, __heap_end;
+    extern uint32_t __heap_start;
+    extern uint32_t __heap_seq_start;
+    // uint32_t heap_size = (uint32_t)&__heap_end - (uint32_t)&__heap_start;
+    uint32_t heap_size = (uint32_t)&__heap_seq_start - (uint32_t)&__heap_start; // Downscale interleaved heap size
     alloc_init(get_alloc_l1(), &__heap_start, heap_size);
 
     // Initialize L1 Sequential Heap Allocator per Tile
@@ -92,6 +95,29 @@ static inline void mempool_init(const uint32_t core_id) {
       alloc_t *tile_allocator = get_alloc_tile(tile_id);
       alloc_init(tile_allocator, (uint32_t *)seq_heap_base, seq_heap_size);
       seq_heap_base += seq_total_size;
+    }
+  }
+}
+
+// Initialize Dynamic Heap Allocator
+static inline void mempool_dynamic_heap_alloc_init(const uint32_t core_id, const uint32_t group_factor){
+  // group_factor = how many tile in each partition
+  if (core_id == 0){
+    extern uint32_t __heap_seq_start;
+    uint32_t num_tiles_per_partition = group_factor;
+
+    // All the sequential heap region is free to use --> No Offset needed
+    
+    // Dynamic allocator base and size
+    uint32_t seq_heap_base = (uint32_t)&__heap_seq_start;
+    uint32_t seq_heap_size = NUM_CORES_PER_TILE * num_tiles_per_partition * HEAP_SEQ_MEM_SIZE;
+    uint32_t num_partition = mempool_get_tile_count() / group_factor;
+    // Dynamically allocate the space for allocators 
+    init_dynamic_heap_alloc(num_partition); 
+    for (uint32_t part_id=0; part_id<num_partition; ++part_id){
+      alloc_t *dynamic_heap_allocator = get_dynamic_heap_alloc(part_id);
+      alloc_init(dynamic_heap_allocator, (uint32_t *)seq_heap_base, seq_heap_size);
+      seq_heap_base += seq_heap_size;
     }
   }
 }

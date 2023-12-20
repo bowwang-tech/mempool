@@ -51,4 +51,10 @@ alloc_t *get_alloc_l1();
 // Get allocator for L1 local sequential heap memory
 alloc_t *get_alloc_tile(const uint32_t tile_id);
 
+// ----- Dynamic Heap Allocator ----- //
+extern alloc_t* dynamic_heap_alloc;
+void init_dynamic_heap_alloc(uint32_t num_partition);
+void free_dynamic_heap_alloc(void);
+alloc_t *get_dynamic_heap_alloc(const uint32_t part_id);
+
 #endif

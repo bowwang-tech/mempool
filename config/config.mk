@@ -16,7 +16,7 @@ ifndef config
     config := $(MEMPOOL_CONFIGURATION)
   else
     # Default configuration, if neither `config` nor `MEMPOOL_CONFIGURATION` was found
-    config := mempool
+    config := terapool
   endif
 endif
 include $(MEMPOOL_DIR)/config/$(config).mk
@@ -38,7 +38,11 @@ l1_bank_size ?= 1024
 
 # Size of sequential memory per core (in bytes)
 # (must be a power of two)
-seq_mem_size ?= 512
+seq_mem_size ?= 1024
+
+# Heap Sequentail memory size in byte per core
+# Half of the L1 region is assign
+heap_seq_mem_size ?= 2048
 
 # Size of stack in sequential memory per core (in bytes)
 stack_size ?= 512

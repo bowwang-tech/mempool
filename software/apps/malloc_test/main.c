@@ -20,12 +20,12 @@ int main() {
   uint32_t core_id = mempool_get_core_id();
   uint32_t num_cores = mempool_get_core_count();
 
+  // Initialization
+  mempool_init(core_id);
   // Initialize synchronization variables
   mempool_barrier_init(core_id);
 
-  // Initialization
-  mempool_init(core_id);
-
+  mempool_barrier(num_cores);
   // Test
   if (core_id == 0) {
     printf("Initialize\n");
