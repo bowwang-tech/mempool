@@ -27,6 +27,8 @@ extern volatile uint32_t wake_up_tile_g5_reg;
 extern volatile uint32_t wake_up_tile_g6_reg;
 extern volatile uint32_t wake_up_tile_g7_reg;
 
+extern volatile uint32_t partition_reg;
+
 typedef uint32_t mempool_id_t;
 typedef uint32_t mempool_timer_t;
 
@@ -191,6 +193,13 @@ static inline void wake_up_tile(uint32_t group_id, uint32_t tile_mask) {
     wake_up_tile_g0_reg = tile_mask;
     break;
   }
+}
+
+// Partition Configuration
+static inline void partition_config (uint32_t group_factor){
+  asm volatile("" ::: "memory");
+  partition_reg = group_factor;
+  asm volatile("" ::: "memory");
 }
 
 // Dump a value via CSR
