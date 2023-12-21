@@ -59,5 +59,7 @@ SECTIONS {
   wake_up_tile_g6_reg = 0x40000058;
   wake_up_tile_g7_reg = 0x4000005C;
 
+  partition_reg       = 0x40000060;
+
   fake_uart              = 0xC0000000;
 }

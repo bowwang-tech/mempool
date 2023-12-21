@@ -74,6 +74,8 @@ module mempool_system
   logic             [NumCores-1:0]      wake_up;
   logic             [DataWidth-1:0]     eoc;
   ro_cache_ctrl_t                       ro_cache_ctrl;
+  // For dynamic partitioning 
+  logic             [PartitionDataWidth-1:0] partition_sel;
 
   dma_req_t  dma_req;
   logic      dma_req_valid;
@@ -122,6 +124,7 @@ module mempool_system
     .clk_i          (clk_i                          ),
     .rst_ni         (rst_ni                         ),
     .wake_up_i      (wake_up                        ),
+    .partition_sel_i(partition_sel                  ),
     .testmode_i     (1'b0                           ),
     .scan_enable_i  (1'b0                           ),
     .scan_data_i    (1'b0                           ),
@@ -493,7 +496,7 @@ module mempool_system
   );
 
   ctrl_registers #(
-    .NumRegs          (16 + 8             ),
+    .NumRegs          (16 + 8 + 1         ),
     .TCDMBaseAddr     (TCDMBaseAddr       ),
     .TCDMSize         (TCDMSize           ),
     .NumCores         (NumCores           ),
@@ -509,6 +512,7 @@ module mempool_system
     .tcdm_end_address_o   (/* Unused */                    ),
     .num_cores_o          (/* Unused */                    ),
     .wake_up_o            (wake_up                         ),
+    .partition_sel_o      (partition_sel                  ),
     .eoc_o                (/* Unused */                    ),
     .eoc_valid_o          (eoc_valid_o                     )
   );

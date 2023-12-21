@@ -6,8 +6,10 @@
 
 module ctrl_registers
   import mempool_pkg::ro_cache_ctrl_t;
+  import mempool_pkg::PartitionDataWidth;
 #(
   parameter int DataWidth                      = 32,
+  // parameter int PartitionDataWidth             = 8,
   parameter int NumRegs                        = 0,
   // Parameters
   parameter logic [DataWidth-1:0] TCDMBaseAddr = 0,
@@ -29,7 +31,8 @@ module ctrl_registers
   output logic      [DataWidth-1:0]      tcdm_start_address_o,
   output logic      [DataWidth-1:0]      tcdm_end_address_o,
   output logic      [DataWidth-1:0]      num_cores_o,
-  output ro_cache_ctrl_t                 ro_cache_ctrl_o
+  output ro_cache_ctrl_t                 ro_cache_ctrl_o,
+  output logic      [PartitionDataWidth-1:0]      partition_sel_o
 );
 
   import mempool_pkg::*;
@@ -65,8 +68,12 @@ module ctrl_registers
 
   // [95:64]:wake_up_tile[7:0]              (rw)
 
+  // [99:96]:partition_sel                  (rw)
+
+  localparam logic [DataWidth-1:0] RegRstVal_Partition = 32'h0000_0080; // Default partition (128), fully interleaved L1 SPM
   localparam logic [MAX_NumGroups*DataWidth-1:0] RegRstVal_TileWakeUp = '{MAX_NumGroups*DataWidth{1'b0}};
-  localparam logic [NumRegs-MAX_NumGroups-1:0][DataWidth-1:0] RegRstVal = '{
+  localparam logic [NumRegs-MAX_NumGroups-1-1:0][DataWidth-1:0] RegRstVal = '{    // `-1` for partition reg
+    // 32'h0000_0000,
     32'h0000_0010,
     32'h0000_000C,
     32'h0000_000C,
@@ -85,8 +92,10 @@ module ctrl_registers
     {DataWidth{1'b0}}
   };
 
+  localparam logic [DataWidthInBytes-1:0] AxiReadOnly_Partition = ReadWriteReg;
   localparam logic [MAX_NumGroups-1:0][DataWidthInBytes-1:0] AxiReadOnly_TileWakeUp = '{MAX_NumGroups{ReadWriteReg}};
-  localparam logic [NumRegs-MAX_NumGroups-1:0][DataWidthInBytes-1:0] AxiReadOnly = '{
+  localparam logic [NumRegs-MAX_NumGroups-1-1:0][DataWidthInBytes-1:0] AxiReadOnly = '{
+    // ReadWriteReg,
     ReadWriteReg,
     ReadWriteReg,
     ReadWriteReg,
@@ -125,6 +134,7 @@ module ctrl_registers
   logic [DataWidth-1:0]   ro_cache_start_3;
   logic [DataWidth-1:0]   ro_cache_end_3;
   logic [MAX_NumGroups*DataWidth-1:0] wake_up_tile;
+  logic [DataWidth-1:0]   partition_sel;
 
   logic [RegNumBytes-1:0] wr_active_d;
   logic [RegNumBytes-1:0] wr_active_q;
@@ -133,8 +143,8 @@ module ctrl_registers
     .RegNumBytes (RegNumBytes                            ),
     .AxiAddrWidth(AddrWidth                              ),
     .AxiDataWidth(AxiLiteDataWidth                       ),
-    .AxiReadOnly ({AxiReadOnly_TileWakeUp, AxiReadOnly}  ),
-    .RegRstVal   ({RegRstVal_TileWakeUp, RegRstVal}      ),
+    .AxiReadOnly ({AxiReadOnly_Partition, AxiReadOnly_TileWakeUp, AxiReadOnly}  ),
+    .RegRstVal   ({RegRstVal_Partition,   RegRstVal_TileWakeUp,   RegRstVal}      ),
     .req_lite_t  (axi_lite_req_t                         ),
     .resp_lite_t (axi_lite_resp_t                        )
   ) i_axi_lite_regs (
@@ -146,7 +156,7 @@ module ctrl_registers
     .rd_active_o(/* Unused */                                                   ),
     .reg_d_i    ('0                                                             ),
     .reg_load_i ('0                                                             ),
-    .reg_q_o    ({  wake_up_tile,
+    .reg_q_o    ({  partition_sel,  wake_up_tile,
                     ro_cache_end_3, ro_cache_start_3,
                     ro_cache_end_2, ro_cache_start_2,
                     ro_cache_end_1, ro_cache_start_1,
@@ -174,6 +184,8 @@ module ctrl_registers
   assign ro_cache_ctrl_o.end_addr[1]   = ro_cache_end_1;
   assign ro_cache_ctrl_o.end_addr[2]   = ro_cache_end_2;
   assign ro_cache_ctrl_o.end_addr[3]   = ro_cache_end_3;
+
+  assign partition_sel_o = partition_sel[PartitionDataWidth-1:0];
 
   always_comb begin
     wake_up_o = '0;

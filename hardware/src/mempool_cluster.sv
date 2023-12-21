@@ -26,6 +26,8 @@ module mempool_cluster
   output logic                               scan_data_o,
   // Wake up signal
   input  logic           [NumCores-1:0]      wake_up_i,
+  // Partition Selection
+  input  logic           [PartitionDataWidth-1:0] partition_sel_i,
   // RO-Cache configuration
   input  ro_cache_ctrl_t                     ro_cache_ctrl_i,
   // DMA request
@@ -295,6 +297,7 @@ module mempool_cluster
           .tcdm_slave_resp_valid_o (tcdm_slave_resp_valid[g]                                        ),
           .tcdm_slave_resp_ready_i (tcdm_slave_resp_ready[g]                                        ),
           .wake_up_i               (wake_up_q[g*NumCoresPerGroup +: NumCoresPerGroup]               ),
+          .partition_sel_i         (partition_sel_i                                                 ),
           .ro_cache_ctrl_i         (ro_cache_ctrl_q[g]                                              ),
           // DMA request
           .dma_req_i               (dma_req_group_q[g]                                              ),
@@ -336,6 +339,7 @@ module mempool_cluster
           .tcdm_slave_resp_valid_o (tcdm_slave_resp_valid[g]                                        ),
           .tcdm_slave_resp_ready_i (tcdm_slave_resp_ready[g]                                        ),
           .wake_up_i               (wake_up_q[g*NumCoresPerGroup +: NumCoresPerGroup]               ),
+          .partition_sel_i         (partition_sel_i                                                 ),
           .ro_cache_ctrl_i         (ro_cache_ctrl_q[g]                                              ),
           // DMA request
           .dma_req_i               (dma_req_group_q[g]                                              ),
@@ -374,6 +378,7 @@ module mempool_cluster
           .tcdm_slave_resp_valid_o (tcdm_slave_resp_valid[g]                                        ),
           .tcdm_slave_resp_ready_i (tcdm_slave_resp_ready[g]                                        ),
           .wake_up_i               (wake_up_q[g*NumCoresPerGroup +: NumCoresPerGroup]               ),
+          .partition_sel_i         (partition_sel_i                                                 ),
           .ro_cache_ctrl_i         (ro_cache_ctrl_q[g]                                              ),
           // DMA request
           .dma_req_i               (dma_req_group_q[g]                                              ),
@@ -457,6 +462,7 @@ module mempool_cluster
         .tcdm_slave_resp_valid_o (tcdm_slave_resp_valid[g]                                        ),
         .tcdm_slave_resp_ready_i (tcdm_slave_resp_ready[g]                                        ),
         .wake_up_i               (wake_up_q[g*NumCoresPerGroup +: NumCoresPerGroup]               ),
+        .partition_sel_i         (partition_sel_i                                                 ),
         .ro_cache_ctrl_i         (ro_cache_ctrl_q[g]                                              ),
         // DMA request
         .dma_req_i               (dma_req_group_q[g]                                              ),
