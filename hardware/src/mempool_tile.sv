@@ -777,9 +777,12 @@ module mempool_tile
       .NumTiles          (NumTiles         ),
       .NumBanksPerTile   (NumBanksPerTile  ),
       .Bypass            (0                ),
-      .SeqMemSizePerTile (SeqMemSizePerTile)
+      .SeqMemSizePerTile (SeqMemSizePerTile),
+      .HeapSeqMemSizePerTile (HeapSeqMemSizePerTile),
+      .TCDMSize          (TCDMSize)
     ) i_address_scrambler (
       .address_i (snitch_data_qaddr[c]       ),
+      .group_factor_i(8'd8),
       .address_o (snitch_data_qaddr_scrambled)
     );
 

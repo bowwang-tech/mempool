@@ -209,7 +209,7 @@ void domain_free(alloc_t *alloc, void *const ptr) {
 
   // Check for memory overflow
   if (canary_and_size.canary != canary(block_ptr)) {
-    printf("Memory Overflow at %p\n", block_ptr);
+    printf("Memory Overflow at %p, with canary= [%d] != [%d]\n", block_ptr, canary_and_size.canary, canary(block_ptr));
     return;
   }
 

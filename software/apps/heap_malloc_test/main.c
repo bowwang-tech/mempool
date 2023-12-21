@@ -35,26 +35,27 @@ int main() {
   	// ---------------------------------------
   	// Interleaved Heap Allocator
   	// ---------------------------------------
-  	printf("Test1: Interleaved Heap Region.\n");
-	alloc_dump(get_alloc_l1());
+  	// printf("Test1: Interleaved Heap Region.\n");
+	// alloc_dump(get_alloc_l1());
 
-	uint32_t *array = (uint32_t *) simple_malloc(ARRAY_SIZE * sizeof(uint32_t));
-	printf("Allocated array at %08X with size %u\n", array, ARRAY_SIZE);
+	// uint32_t *array = (uint32_t *) simple_malloc(ARRAY_SIZE * sizeof(uint32_t));
+	// printf("Allocated array at %08X with size %u\n", array, ARRAY_SIZE);
 
-	alloc_dump(get_alloc_l1());
+	// alloc_dump(get_alloc_l1());
 
-    // Free
-    simple_free(array);
-    printf("Freed array at %08X with size %u\n", array, ARRAY_SIZE);
+ //    // Free
+ //    simple_free(array);
+ //    printf("Freed array at %08X with size %u\n", array, ARRAY_SIZE);
 
   	// ---------------------------------------
   	// Sequential Heap Allocator
   	// ---------------------------------------
-  	printf("Test2: Sequential Heap Region.\n");
+  	// printf("Test2: Sequential Heap Region.\n");
   	uint32_t num_partition = mempool_get_tile_count() / GROUP_FACTOR;
 
   	for (uint32_t part_id=0; part_id<num_partition; ++part_id){
-      printf("Test partiton allocator %u: \n", part_id);
+  	  // uint32_t part_id = 1;
+      // printf("Test partiton allocator %u: \n", part_id);
 
       alloc_t *dynamic_heap_alloc = get_dynamic_heap_alloc(part_id);
 
@@ -63,14 +64,18 @@ int main() {
 
       // Malloc uint32_t array of size 16 (40 bytes)
       uint32_t *part_array = (uint32_t *)domain_malloc(dynamic_heap_alloc, ARRAY_SIZE * 4);
-      printf("Allocated array at %08X with size %u\n", part_array, ARRAY_SIZE);
+      // printf("Allocated array at %08X with size %u\n", part_array, ARRAY_SIZE);
 
       // Print out allocator
       alloc_dump(dynamic_heap_alloc);
 
+      // Copy data
+      for (uint32_t i=0; i<ARRAY_SIZE; ++i){
+      	part_array[i] = i;
+      }
       // Free array
       domain_free(dynamic_heap_alloc, part_array);
-      printf("Freed array at %08X with size %u\n", part_array, ARRAY_SIZE);
+      // printf("Freed array at %08X with size %u\n", part_array, ARRAY_SIZE);
 
       // Print out allocator
       alloc_dump(dynamic_heap_alloc);

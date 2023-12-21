@@ -273,6 +273,9 @@ package mempool_pkg;
   localparam int unsigned SeqMemSizePerCore = `ifdef SEQ_MEM_SIZE `SEQ_MEM_SIZE `else 0 `endif;
   localparam int unsigned SeqMemSizePerTile = NumCoresPerTile*SeqMemSizePerCore;
 
+  localparam int unsigned HeapSeqMemSizePerCore = `ifdef HEAP_SEQ_MEM_SIZE `SEQ_MEM_SIZE `else 2048 `endif;
+  localparam int unsigned HeapSeqMemSizePerTile = NumCoresPerTile*HeapSeqMemSizePerCore;
+
   typedef struct packed {
     int unsigned slave_idx;
     addr_t mask;
